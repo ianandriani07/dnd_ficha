@@ -1,2 +1,1 @@
-"# dnd_ficha" 
-"# dnd_ficha" 
+Criação de uma ficha automatizada para todos serem felizes
