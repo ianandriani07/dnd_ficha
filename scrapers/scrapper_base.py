@@ -1,24 +1,15 @@
 from collections.abc import Callable
 from typing import NamedTuple, Optional
-from enum import Enum
+from text_type import Text_Type
 import bs4
-
-
-class Text_Type(Enum):
-    CAMPAIGN = 1
-    SUBRACE = 2
-    DESCRIPTION = 3
-    SUBCATEGORY = 4
-    SUBCATEGORY_DESCRIPTION = 5
-    SUBCATEGORY_EXPANSION = 6
 
 
 class Text:
 
     __slots__ = ('main_text', 'sub_text', 'depth',
-                 'expected_depth', 'parent', 'category', 'marker', 'is_single_text')
+                 'expected_depth', 'parent', 'category', 'marker', 'is_single_text', 'root')
 
-    def __init__(self, main_text: str, depth: int, expected_depth: int, category: int = None, marker: str = '', parent=None, is_single_text: bool = False) -> None:
+    def __init__(self, main_text: str, depth: int, expected_depth: int, category: int = None, marker: str = '', parent=None, is_single_text: bool = False, root=None) -> None:
         self.main_text: str = main_text
         self.depth: int = depth
         self.expected_depth: int = expected_depth
@@ -26,6 +17,7 @@ class Text:
         self.category: Text_Type = category
         self.sub_text: list[Text] = []
         self.marker: str = marker
+        self.root: Optional[Text] = root
         self.is_single_text: bool = is_single_text
 
     def append(self, text):
@@ -61,6 +53,7 @@ def get_last_element(text_sequence: Text) -> Text:
     return get_last_element(text_sequence.sub_text[-1])
 
 
+# TODO: MAKE SO INDEX IS NOT DEPENDANT ON BEING PASSED AS REFERENCE!
 def _get_last_element_with_index(text_sequence: Text, index: list[int]) -> tuple[Text, list[int]]:
     if len(text_sequence.sub_text) == 0:
         return (text_sequence, index)
@@ -71,6 +64,13 @@ def _get_last_element_with_index(text_sequence: Text, index: list[int]) -> tuple
 def get_last_element_with_index(text_sequence: Text) -> tuple[Text, list[int]]:
     index: list[int] = []
     return _get_last_element_with_index(text_sequence, index)
+
+
+def _clean_text(s: str) -> str:
+    s = s.replace('\n', '')
+    s = s.replace('\n\r', '')
+    s = s.replace('\t', '')
+    return s
 
 
 class Hierarchy_Identifier(NamedTuple):
@@ -95,7 +95,7 @@ class Scrapper:
         text = ''
         for tg in tag.contents:
             if tg.name is None or ignore(tg):
-                text += tg.text.replace('\n', '')
+                text += _clean_text(tg.text)
         return text
 
     def add_to_hierarchy(self, depth: int, identifier: Callable[[bs4.Tag], bool], text_type: Text_Type, marker=''):
@@ -131,7 +131,7 @@ class Scrapper:
 
     def parse_element_and_add_to_a_list(self, xml_element: bs4.Tag, current_depth: int, parsed_location: list[Text]) -> int:
 
-        if xml_element.text == '\n':
+        if xml_element.text == '\n' or xml_element.text == '\r\n':
             return current_depth
 
         hierarchy = self.check_for_hierarchy(xml_element)
@@ -141,7 +141,7 @@ class Scrapper:
 
         # Is a text
         if xml_element.name is None or should_be_treated_as_text:
-            cleaned_text = xml_element.text.replace('\n', '')
+            cleaned_text = _clean_text(xml_element.text)
 
             if not parsed_location:
                 temp_text = Text(cleaned_text, 0,
@@ -160,7 +160,7 @@ class Scrapper:
 
             if len(parent.sub_text) == 0:
                 temp_text = Text(cleaned_text, parent.depth + 1,
-                                 self.TEXT_EXPECTED_DEPTH, self.single_text_category, parent=parent, is_single_text=True)
+                                 self.TEXT_EXPECTED_DEPTH, self.single_text_category, parent=parent, is_single_text=True, root=parent.root)
                 parent.append(temp_text)
                 current_depth = self.TEXT_EXPECTED_DEPTH
                 index.append(0)
@@ -176,7 +176,7 @@ class Scrapper:
                     xml_child, current_depth, parsed_location)
         # Is a Tag
         elif hierarchy:
-            cleaned_text = xml_element.text.replace('\n', '')
+            cleaned_text = _clean_text(xml_element.text)
 
             if hierarchy.expected_depth == 0:
                 current_depth = 0
@@ -200,8 +200,12 @@ class Scrapper:
                     else:
                         self._current_index[-1] = current_sub_text_parent_sub_text_len
 
+                    root = parent.root
+                    if root is None:
+                        root = parent
+
                     temp_text = Text(
-                        cleaned_text, parent.depth + 1, hierarchy.expected_depth, hierarchy.text_type, hierarchy.marker, parent)
+                        cleaned_text, parent.depth + 1, hierarchy.expected_depth, hierarchy.text_type, hierarchy.marker, parent, root=root)
 
                     parent.append(temp_text)
             elif hierarchy.expected_depth <= current_depth:
@@ -216,8 +220,12 @@ class Scrapper:
                         self._current_index.append(
                             current_sub_text_parent_sub_text_len)
 
+                        root = current_parent.root
+                        if root is None:
+                            root = current_parent
+
                         temp_text = Text(cleaned_text, current_parent.depth + 1,
-                                         hierarchy.expected_depth, hierarchy.text_type, hierarchy.marker, current_parent)
+                                         hierarchy.expected_depth, hierarchy.text_type, hierarchy.marker, current_parent, root=root)
                         current_parent.append(temp_text)
                 current_depth = hierarchy.expected_depth
 

@@ -1,9 +1,10 @@
 import requests as rq
-import bs4
 from bs4 import Tag
 import scrapper_base as sb
 from scrapper_base import Text
-from scrapper_base import Text_Type as tt
+from text_type import Text_Type as tt
+import text2json as tj
+import json
 
 # TODO: Tabelas não são consideradas
 
@@ -35,7 +36,7 @@ def is_li_without_li_as_parent(tag: Tag):
     return tag.name == 'li' and tag.findParent('li') is None
 
 
-def is_strong(tag: Tag):
+def is_strong(tag: Tag):  # Categorias
     return tag.name == 'strong'
 
 # Tag a ser ignorada
@@ -64,11 +65,11 @@ scrapper.add_to_hierarchy(0, is_h1, tt.CAMPAIGN, marker='<->')
 scrapper.add_to_hierarchy(1, is_h2, tt.SUBRACE, marker='->')
 scrapper.add_to_hierarchy(2, is_em_with_strong_parent,
                           tt.DESCRIPTION, marker='')
-scrapper.add_to_hierarchy(2, is_strong, tt.SUBCATEGORY, marker='•')
-scrapper.single_text_category = tt.SUBCATEGORY_DESCRIPTION
+scrapper.add_to_hierarchy(2, is_strong, tt.CATEGORY, marker='•')
+scrapper.single_text_category = tt.CATEGORY_DESCRIPTION
 scrapper.TEXT_EXPECTED_DEPTH = 3
 scrapper.add_to_hierarchy(4, is_li_with_li_as_parent,
-                          tt.SUBCATEGORY_EXPANSION, marker='-->')
+                          tt.CATEGORY_EXPANSION, marker='-->')
 scrapper.add_should_be_parsed(is_li_with_strong_as_child)
 scrapper.add_should_be_parsed(is_ul_with_li_as_parent)
 scrapper.add_should_treat_as_text(is_a)
@@ -83,5 +84,8 @@ data: list[Text] = []
 
 data = scrapper.parse_string(web_page_text, 0)
 
-for i in data:
-    print(i)
+d = tj.convert_Text_to_dict(data[0])
+jsoned = json.dump(d)
+
+with open('Fodase.txt', 'w') as f:
+    f.write(jsoned)

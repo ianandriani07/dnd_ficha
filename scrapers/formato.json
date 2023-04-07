@@ -1,0 +1,27 @@
+{
+  "CAMPAIGN": {
+    "type": "CAMPAIGN",
+    "desc": ["DESC1", "DESC2"],
+    "body": {
+      "CAT 1": {
+        "DESC1": [],
+        "DESC2": []
+      }
+    }
+  },
+  "CAMPAIGN2": {
+    "type": "CAMPAIGN",
+    "desc": ["DESC1", "DESC2"],
+    "subraces": {
+      "RACE 1": {
+        "type": "SUBRACE",
+        "body": {
+          "CAT 1": {
+            "DESC1": [],
+            "DESC2": []
+          }
+        }
+      }
+    }
+  }
+}
