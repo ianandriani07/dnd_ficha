@@ -1,5 +1,6 @@
 from text_type import Text_Type as tt
 from scrapper_base import Text
+import json
 
 
 def _convert_single_Text_to_dict(text: Text, data: dict) -> dict:
@@ -25,8 +26,8 @@ def _convert_single_Text_to_dict(text: Text, data: dict) -> dict:
     elif category == tt.CATEGORY:
         if text.parent.category == tt.SUBRACE:
             subrace_name = text.parent.main_text
-            # campaign.subrace.body.category
-            data[text.root.main_text][subrace_name]['body'][text.main_text] = {}
+            # campaign.subraces.subrace.body.category
+            data[text.root.main_text]['subraces'][subrace_name]['body'][text.main_text] = {}
         elif text.parent.category == tt.CAMPAIGN:
             # campaign.body.category
             data[text.root.main_text]['body'][text.main_text] = {}
@@ -66,3 +67,13 @@ def convert_Text_list_to_dict(text_list: list[Text]) -> dict:
     for text in text_list:
         result = convert_Text_to_dict(text, result)
     return result
+
+
+def convert_Text_to_JSON(text: Text) -> str:
+    d: dict = convert_Text_to_dict(text)
+    return json.dumps(d)
+
+
+def convert_Text_list_to_JSON(text_list: Text):
+    d: dict = convert_Text_list_to_dict(text_list)
+    return json.dumps(d)

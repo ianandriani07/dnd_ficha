@@ -4,9 +4,32 @@ import scrapper_base as sb
 from scrapper_base import Text
 from text_type import Text_Type as tt
 import text2json as tj
-import json
 
 # TODO: Tabelas não são consideradas
+
+"""
+Notação: coluna, linha (x, y)
+Organização das tabelas:
+
+Cabeçalho 1,1
+
+    Cabeçalho 2,1
+
+        Cabeçalho 3,1
+        
+            Elemento 3, 2
+            Elemento 3, 3
+            Elemento 3, 4
+            ...
+        Elemento 2, 2
+        Elemento 2, 3
+        Elemento 2, 4
+        ...
+    Elemento 1, 2
+    Elemento 1, 3
+    Elemento 1, 4
+    ...
+"""
 
 
 # A campanha de onde aquelas raças vieram ou subraças especificas para aquela campanha
@@ -78,14 +101,14 @@ scrapper.add_should_treat_as_text(is_a)
 # Pedir o site para o scraping relaciona a linhagens
 link = input('Linhagem: ')
 web_page_text = rq.get(link).text
+file_name = input('Nome do arquivo: ')
 
 
 data: list[Text] = []
 
 data = scrapper.parse_string(web_page_text, 0)
 
-d = tj.convert_Text_to_dict(data[0])
-jsoned = json.dump(d)
+json_text = tj.convert_Text_list_to_JSON(data)
 
-with open('Fodase.txt', 'w') as f:
-    f.write(jsoned)
+with open(file_name + '.json', 'w') as f:
+    f.write(json_text)
