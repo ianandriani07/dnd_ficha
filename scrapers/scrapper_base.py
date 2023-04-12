@@ -123,7 +123,7 @@ class Table(ObjectBase):
             columns = None
         index = [' '*(2*self.depth) + self.marker]*(len(safe_table) - 1)
         frame = DataFrame(table, index=index, columns=columns)
-        return frame.to_string(justify='center') + '\n'
+        return '-There may be elements that dont fit that were excluded in this print!\n-' + frame.to_string(justify='center') + '\n'
 
 
 def get_element(l: list[ObjectBase], position_map: list[int]) -> Text:
@@ -381,9 +381,9 @@ class Scrapper:
             elif hierarchy.expected_depth <= current_depth:
                 child = get_element(parsed_location, self._current_index)
                 current_parent = child
-                for went_back in range(1, current_depth - hierarchy.expected_depth + 2):
+                for went_back in range(1, child.depth + 1):
                     current_parent: ObjectBase = current_parent.parent
-                    if current_depth is None:
+                    if current_parent is None:
                         raise
                     if hierarchy.expected_depth > current_parent.expected_depth:
                         self._current_index = self._current_index[:-went_back]
@@ -399,11 +399,12 @@ class Scrapper:
                         temp_text = Text(cleaned_text, current_parent.depth + 1,
                                          hierarchy.expected_depth, hierarchy.text_type, hierarchy.associated_text_type, hierarchy.marker, current_parent, root=root)
                         current_parent.append(temp_text)
+                        break
                 current_depth = hierarchy.expected_depth
 
         return current_depth
 
-    def parse_string(self, page: str, skipped: int) -> list[Text]:
+    def parse_string(self, page: str, skipped: int, show_identified_elements: bool = False) -> list[Text]:
         parsed_text: list[ObjectBase] = []
 
         # Instalar lxml com o pip. Ou trocar 'lxml' por 'html.parser'
@@ -420,7 +421,8 @@ class Scrapper:
                     return True
             return False
 
-        # print(xml_tree.find_all(all_identifier))
+        if show_identified_elements:
+            print(xml_tree.find_all(all_identifier))
         for xml_element in xml_tree.find_all(all_identifier)[skipped:]:
             current_depth = self.parse_element_and_add_to_a_list(
                 xml_element, current_depth, parsed_text)

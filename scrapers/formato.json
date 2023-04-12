@@ -1,27 +1,40 @@
+//LINHAGENS
 {
   "CAMPAIGN": {
-    "type": "CAMPAIGN",
     "desc": ["DESC1", "DESC2"],
     "body": {
       "CAT 1": {
-        "DESC1": [],
-        "DESC2": []
-      }
-    }
+        "desc": {
+          "DESC1": [],
+          "DESC2": []
+        },
+        "subcategories": {
+          "SUBCAT1": "DESC1"
+        }
+      },
+      "TABLE 1": [[], [], []]
+    },
+    "subraces": {}
   },
   "CAMPAIGN2": {
-    "type": "CAMPAIGN",
     "desc": ["DESC1", "DESC2"],
+    "body": {},
     "subraces": {
       "RACE 1": {
-        "type": "SUBRACE",
+        "desc": ["DESC1", "DESC2"],
         "body": {
           "CAT 1": {
-            "DESC1": [],
-            "DESC2": []
-          }
+            "desc": {
+              "DESC1": [],
+              "DESC2": []
+            },
+            "subcategories": {
+              "SUBCAT1": "DESC1"
+            }
+          },
+          "TABLE 1": [[], [], []]
         }
       }
     }
   }
-}
+} //LINHAGENS
