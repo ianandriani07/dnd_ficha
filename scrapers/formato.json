@@ -1,40 +1,63 @@
 //LINHAGENS
-{
-  "CAMPAIGN": {
-    "desc": ["DESC1", "DESC2"],
-    "body": {
-      "CAT 1": {
-        "desc": {
-          "DESC1": [],
-          "DESC2": []
-        },
-        "subcategories": {
-          "SUBCAT1": "DESC1"
-        }
-      },
-      "TABLE 1": [[], [], []]
-    },
-    "subraces": {}
-  },
-  "CAMPAIGN2": {
-    "desc": ["DESC1", "DESC2"],
-    "body": {},
-    "subraces": {
-      "RACE 1": {
-        "desc": ["DESC1", "DESC2"],
-        "body": {
-          "CAT 1": {
-            "desc": {
-              "DESC1": [],
-              "DESC2": []
-            },
-            "subcategories": {
-              "SUBCAT1": "DESC1"
-            }
+[
+  {
+    "CAMPAIGN": {
+      "desc": ["DESC1", "DESC2"],
+      "body": {
+        "CAT 1": {
+          "desc": {
+            "DESC1": [],
+            "DESC2": []
           },
-          "TABLE 1": [[], [], []]
+          "subcategories": {
+            "SUBCAT1": "DESC1"
+          }
+        },
+        "TABLE 1": [[], [], []]
+      },
+      "subraces": {}
+    },
+    "CAMPAIGN2": {
+      "desc": ["DESC1", "DESC2"],
+      "body": {},
+      "subraces": {
+        "RACE 1": {
+          "desc": ["DESC1", "DESC2"],
+          "body": {
+            "CAT 1": {
+              "desc": {
+                "DESC1": [],
+                "DESC2": []
+              },
+              "subcategories": {
+                "SUBCAT1": "DESC1"
+              }
+            },
+            "TABLE 1": [[], [], []]
+          }
         }
       }
     }
+  }, //LINHAGENS
+
+  //CLASSES
+  {
+    "DESCRIPTION": "DESC1",
+    "MULTICLASSREQ": "REQ1",
+    "CLASS_TABLE": "TABLE1",
+    "BASIC_FEATURES": {
+      "HIT POINTS": {
+        "HIT POINTS A": "DESC"
+      },
+      "Equipment": {
+        "DESC": []
+      }
+    },
+    "FEATURES": {
+      "NAME": {
+        "desc": []
+      }
+    }
   }
-} //LINHAGENS
+]
+//CLASSES

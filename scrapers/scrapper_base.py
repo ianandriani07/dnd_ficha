@@ -91,7 +91,7 @@ class Table(ObjectBase):
 
         for (index, value) in enumerate(table_size):
             if value != x:
-                copied_table.pop(index + removed)
+                copied_table.pop(index - removed)
                 removed += 1
 
         return copied_table

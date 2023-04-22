@@ -8,6 +8,7 @@ for_the_nameless: int = 0
 def _convert_single_ObjectBase_to_dict(text: ObjectBase, data: dict) -> dict:
     category: tt = text.category
     if type(text) == Text:
+        # LINEAGES
         if category == tt.L_CAMPAIGN:
             data[text.main_text] = {
                 "desc": [],
@@ -90,6 +91,13 @@ def _convert_single_ObjectBase_to_dict(text: ObjectBase, data: dict) -> dict:
             elif text.parent.category == tt.L_CAMPAIGN:
                 # campaign.body.table_name
                 data[text.root.main_text]['body'][text.main_text] = []
+
+        ################################################################
+        # CLASSES
+
+        elif category == tt.C_MAIN_DESCRIPTION:
+            pass
+
     elif type(text) == Table:
         if category == tt.L_TABLE:
             if text.parent.category == tt.L_TABLE_NAME:
